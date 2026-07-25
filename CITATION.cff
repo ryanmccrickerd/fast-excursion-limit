@@ -1,0 +1,18 @@
+cff-version: 1.2.0
+message: "If you use this repository, please cite it using the information here."
+authors:
+- given-names: "Ryan"
+  family-names: "McCrickerd"
+title: "Fast-excursion limit of the Heston model"
+version: 0.1.0
+license: MIT
+repository-code: "https://github.com/ryanmccrickerd/fast-excursion-limit"
+preferred-citation:
+  type: article
+  title: "Fast-excursion limit of the Heston model"
+  authors:
+  - given-names: "Ryan"
+    family-names: "McCrickerd"
+  year: 2026
+  doi: "10.48550/arXiv.2606.06737"
+  url: "https://arxiv.org/abs/2606.06737"

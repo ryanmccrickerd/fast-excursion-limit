@@ -1,0 +1,34 @@
+name: CI
+
+on:
+  push:
+  workflow_dispatch:
+
+jobs:
+  ci:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.14"
+          cache: pip
+      - run: pip install -e ".[dev]"
+      - run: ruff check .
+      - run: ruff format --check .
+      - run: pytest
+      - run: pip install ipykernel nbconvert papermill
+      - name: Install Latin Modern Roman
+        run: |
+          brew untap aws/tap
+          brew install --cask font-latin-modern
+      - name: Generate all article figures
+        run: papermill notebooks/ci.ipynb /tmp/ci-executed.ipynb --cwd notebooks --log-output --no-progress-bar
+      - name: Set artifact name
+        id: vars
+        run: echo "name=figures-${GITHUB_SHA::7}" >> "$GITHUB_OUTPUT"
+      - uses: actions/upload-artifact@v7
+        with:
+          name: ${{ steps.vars.outputs.name }}
+          path: plots/*.pdf
+          retention-days: 7

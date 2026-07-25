@@ -14,10 +14,6 @@ pip install -e ".[dev]"
 
 Notebooks assume you have a way to open `.ipynb` files (VS Code with the Jupyter extension, JupyterLab, classic Notebook, etc.) — none is bundled here.
 
-Plots will try to use Latin Modern Roman font — install it to reproduce the figures with this font, otherwise matplotlib falls back to whatever serif font is available. On Mac:
-
-```sh
-brew install --cask font-latin-modern
-```
+Figures use Latin Modern Roman, bundled in `fonts/` and registered by `plot_config`.
 
 Developed with [Claude Code](https://claude.com/claude-code) (Anthropic).

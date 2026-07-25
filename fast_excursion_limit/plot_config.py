@@ -2,8 +2,13 @@ from pathlib import Path
 
 import matplotlib.pyplot as plt
 from cycler import cycler
+from matplotlib import font_manager
 
 PLOTS_DIR = Path(__file__).resolve().parent.parent / "plots"
+FONTS_DIR = Path(__file__).resolve().parent.parent / "fonts"
+
+for _font in FONTS_DIR.glob("*.otf"):
+    font_manager.fontManager.addfont(str(_font))
 
 TWO_PANEL_FIGSIZE = (6.5, 3.5)
 
@@ -18,7 +23,7 @@ def set_style() -> None:
             "axes.prop_cycle": cycler(color=COLORS),
             "axes.titlesize": 9,
             "figure.dpi": 150,
-            "font.family": ["LMRoman10"],
+            "font.family": ["Latin Modern Roman"],
             "font.size": 9,
             "grid.alpha": 0.5,
             "grid.linewidth": 0.5,

@@ -18,10 +18,6 @@ jobs:
       - run: ruff format --check .
       - run: pytest
       - run: pip install ipykernel nbconvert papermill
-      - name: Install Latin Modern Roman
-        run: |
-          brew untap aws/tap
-          brew install --cask font-latin-modern
       - name: Generate all article figures
         run: papermill notebooks/ci.ipynb /tmp/ci-executed.ipynb --cwd notebooks --log-output --no-progress-bar
       - name: Set artifact name

@@ -23,5 +23,5 @@ EXAMPLE_PARAMS_FEH = {
 }
 EXAMPLE_PARAMS_ODE = {**EXAMPLE_PARAMS_FEH, "reversion": 1.0}
 
-NUM_PATHS_TOUCHES_CI = 10_000
-NUM_PATHS_TOUCHES_LOCAL = 100
+# figures.yml workflow overrides number of paths via papermill
+NUM_PATHS_TOUCHES = 100

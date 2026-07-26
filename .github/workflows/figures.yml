@@ -1,0 +1,30 @@
+name: Figures
+
+on:
+  workflow_dispatch:
+    inputs:
+      num_paths:
+        description: "Number of MC paths for touch option figures (5-7)"
+        type: string
+        default: "10000"
+
+jobs:
+  figures:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.14"
+          cache: pip
+      - run: pip install -e "." ipykernel nbconvert papermill
+      - name: Generate all article figures
+        run: papermill notebooks/figures.ipynb /tmp/figures-executed.ipynb --cwd notebooks --log-output --no-progress-bar -p num_paths ${{ inputs.num_paths }}
+      - name: Set artifact name
+        id: vars
+        run: echo "name=figures-${GITHUB_SHA::7}" >> "$GITHUB_OUTPUT"
+      - uses: actions/upload-artifact@v7
+        with:
+          name: ${{ steps.vars.outputs.name }}
+          path: plots/*.pdf
+          retention-days: 7

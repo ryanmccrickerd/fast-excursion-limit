@@ -14,6 +14,6 @@ pip install -e ".[dev]"
 
 Notebooks assume you have a way to open `.ipynb` files (VS Code with the Jupyter extension, JupyterLab, classic Notebook, etc.) — none is bundled here.
 
-Figures use Latin Modern Roman, bundled in `fonts/` and registered by `plot_config`.
+Figures use Latin Modern Roman, bundled in `fonts/` and registered by `plot_config`. These fonts are separately licensed.
 
 Developed with [Claude Code](https://claude.com/claude-code) (Anthropic).

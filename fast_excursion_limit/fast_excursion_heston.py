@@ -7,8 +7,8 @@ from fast_excursion_limit._heston_base import HestonBase
 class FastExcursionHeston(HestonBase):
     def _simulate_next(self, time_prev, brownian_prev, space_prev, step_size):
         space_next = space_prev + step_size
-        brownian_next = brownian_prev + np.random.normal() * step_size**0.5
-        time_next = max(time_prev, space_next - self.gamma * brownian_next)
+        brownian_next = self._brownian_next(brownian_prev, step_size)
+        time_next = max(time_prev, space_next - self.gamma * brownian_next[1])
         return time_next, brownian_next, space_next
 
     def cdf(self, strike, maturity):
@@ -30,8 +30,8 @@ class FastExcursionHeston(HestonBase):
             raise ValueError(
                 "norminvgauss params are undefined at gamma=0, sigma=0, or rho=+-1"
             )
-        # straight from Mechkov (2015) p.5 without the time scaling
         nu = self.gamma * self.sigma
+        # From Mechkov (2015) p.5 without the time scaling
         alpha = 0.5 * (4 - 4 * self.rho * nu + nu**2) ** 0.5 / nu / (1 - self.rho**2)
         beta = -0.5 * (nu - 2 * self.rho) / nu / (1 - self.rho**2)
         delta = self.sigma * (1 - self.rho**2) ** 0.5 / self.gamma

@@ -38,42 +38,45 @@ class HestonBase:
         return self.domestic_rate - self.foreign_rate
 
     def simulate(self, maturity, step_size, full_output=False):
-        Y, W1, x = self._simulate_time(maturity, step_size)
-        Z, W0 = self._simulate_price(Y, W1, x)
+        Y, W, x = self._simulate_time(maturity, step_size)
+        Z = self._simulate_price(Y, W, x)
         if full_output:
-            return Z, Y, W0, W1, x
+            return Z, Y, W, x
         return Z, Y
 
-    def _simulate_price(self, Y, W1, x):
-        step_sizes = np.diff(x)
-        num_steps = len(step_sizes)
-        brownian_steps = np.random.normal(size=num_steps) * step_sizes**0.5
-        W0 = np.zeros_like(W1)
-        W0[1:] = np.cumsum(brownian_steps)
-        W = self.rho * W1 + (1.0 - self.rho**2) ** 0.5 * W0
+    def _simulate_price(self, Y, W, x):
+        B = (1.0 - self.rho**2) ** 0.5 * W[:, 0] + self.rho * W[:, 1]
         Z = self.spot_price * np.exp(
-            self._drift * Y + self.sigma * W - 0.5 * self.sigma**2 * x
+            self._drift * Y + self.sigma * B - 0.5 * self.sigma**2 * x
         )
-        return Z, W0
+        return Z
 
     def _simulate_time(self, maturity, step_size):
-        Y, W1, x = [0.0], [0.0], [0.0]
+        Y, W, x = [0.0], [(0.0, 0.0)], [0.0]
         # Iterate until Y strictly exceeds maturity
         while Y[-1] <= maturity:
             time_next, brownian_next, space_next = self._simulate_next(
                 time_prev=Y[-1],
-                brownian_prev=W1[-1],
+                brownian_prev=W[-1],
                 space_prev=x[-1],
                 step_size=step_size,
             )
             Y.append(time_next)
-            W1.append(brownian_next)
+            W.append(brownian_next)
             x.append(space_next)
-        return np.array(Y), np.array(W1), np.array(x)
+        return np.array(Y), np.array(W), np.array(x)
 
     def _simulate_next(self, time_prev, brownian_prev, space_prev, step_size):
-        # This is where HestonRandomODE and FastExcursionHeston differ
+        # This is where HestonRandomODE and FastExcursionHeston differ, although both
+        # make use of the following (inefficient) _brownian_next method in order to keep
+        # random numbers aligned.
         raise NotImplementedError
+
+    def _brownian_next(self, brownian_prev, step_size):
+        brownian_step = np.random.standard_normal(2) * step_size**0.5
+        W0 = brownian_prev[0] + brownian_step[0]
+        W1 = brownian_prev[1] + brownian_step[1]
+        return W0, W1
 
     def __eq__(self, other) -> bool:
         return type(self) is type(other) and vars(self) == vars(other)

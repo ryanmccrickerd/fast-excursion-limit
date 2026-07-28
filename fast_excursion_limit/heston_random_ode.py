@@ -1,5 +1,3 @@
-import numpy as np
-
 from fast_excursion_limit import defaults
 from fast_excursion_limit._heston_base import HestonBase
 from fast_excursion_limit.fast_excursion_heston import FastExcursionHeston
@@ -26,12 +24,12 @@ class HestonRandomODE(HestonBase):
         super()._check_params()
 
     def _simulate_next(self, time_prev, brownian_prev, space_prev, step_size):
-        # The 1 used here keeps a flat forward variance of \sigma^2, same as FEH
         gradient = (
-            self.reversion * (time_prev - space_prev + self.gamma * brownian_prev) + 1
+            self.reversion * (time_prev - space_prev + self.gamma * brownian_prev[1])
+            + 1  # The 1 here keeps a flat forward variance of \sigma^2, same as FEH
         )
         time_next = time_prev + step_size / max(gradient, defaults.EPSILON)
-        brownian_next = brownian_prev + np.random.normal() * step_size**0.5
+        brownian_next = self._brownian_next(brownian_prev, step_size)
         space_next = space_prev + step_size
         return time_next, brownian_next, space_next
 

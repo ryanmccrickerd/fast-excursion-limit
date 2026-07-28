@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
     inputs:
       num_paths:
-        description: "Number of MC paths for touch option figures (5-7)"
+        description: "MC paths for touch option figures (5-7)"
         type: string
         default: "10000"
 

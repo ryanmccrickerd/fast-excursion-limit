@@ -38,6 +38,11 @@ class HestonBase:
         return self.domestic_rate - self.foreign_rate
 
     def simulate(self, maturity, step_size, full_output=False):
+        # The key method that returns a realisation of price-time parametric
+        # representations (Z, Y). This is slow to say the least. Due to the combination
+        # of a) not knowing how many (parametric) steps will be required, b) needing to
+        # keep the ODE and FEH random numbers aligned and c) wanting the code to remain
+        # readable
         Y, W, x = self._simulate_time(maturity, step_size)
         Z = self._simulate_price(Y, W, x)
         if full_output:
@@ -53,7 +58,7 @@ class HestonBase:
 
     def _simulate_time(self, maturity, step_size):
         Y, W, x = [0.0], [(0.0, 0.0)], [0.0]
-        # Iterate until Y strictly exceeds maturity
+        # Iterate until time component Y strictly exceeds maturity
         while Y[-1] <= maturity:
             time_next, brownian_next, space_next = self._simulate_next(
                 time_prev=Y[-1],
@@ -72,7 +77,8 @@ class HestonBase:
         # random numbers aligned.
         raise NotImplementedError
 
-    def _brownian_next(self, brownian_prev, step_size):
+    @staticmethod
+    def _brownian_next(brownian_prev, step_size):
         brownian_step = np.random.standard_normal(2) * step_size**0.5
         W0 = brownian_prev[0] + brownian_step[0]
         W1 = brownian_prev[1] + brownian_step[1]

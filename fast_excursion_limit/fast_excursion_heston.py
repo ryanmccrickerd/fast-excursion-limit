@@ -8,14 +8,22 @@ class FastExcursionHeston(HestonBase):
     def _simulate_next(self, time_prev, brownian_prev, space_prev, step_size):
         space_next = space_prev + step_size
         brownian_next = self._brownian_next(brownian_prev, step_size)
+        # Exact simulation of this running maximum of Brownian motion is of course
+        # possible via a Brownian bridge (using an additional uniform variable). But
+        # this defeats the main point here, which is to keep random numbers aligned
+        # between the two simulation schemes, so that we can visualise convergence on
+        # a pathwise basis (as in Figure 1).
         time_next = max(time_prev, space_next - self.gamma * brownian_next[1])
         return time_next, brownian_next, space_next
 
     def cdf(self, strike, maturity):
+        # This is the CDF of any / all of the four OHLC processes (any selection
+        # process of the model for that matter)
         x = np.log(np.asarray(strike) / self.spot_price)
         return norminvgauss.cdf(x, **self._norminvgauss_kwargs(maturity))
 
     def ppf(self, probability, maturity):
+        # Similarly, the PPF for any / all of the OHLC processes
         x = norminvgauss.ppf(probability, **self._norminvgauss_kwargs(maturity))
         return self.spot_price * np.exp(x)
 

@@ -24,10 +24,16 @@ class HestonRandomODE(HestonBase):
         super()._check_params()
 
     def _simulate_next(self, time_prev, brownian_prev, space_prev, step_size):
+        # Evaluate the Heston / integrated CIR ODE function to get the ODE solution's
+        # gradient
         gradient = (
             self.reversion * (time_prev - space_prev + self.gamma * brownian_prev[1])
             + 1  # The 1 here keeps a flat forward variance of \sigma^2, same as FEH
         )
+        # Now we take a forward Euler step for the *inverse* of the ODE solution (using
+        # the inverse function theorem). This is the secret sauce that achieves
+        # stability under arbitrarily high reversion. Establishing the legitimacy of
+        # this, including the floor epsilon, is non-trivial. (See the article.)
         time_next = time_prev + step_size / max(gradient, defaults.EPSILON)
         brownian_next = self._brownian_next(brownian_prev, step_size)
         space_next = space_prev + step_size

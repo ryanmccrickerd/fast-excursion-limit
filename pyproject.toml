@@ -16,6 +16,11 @@ dev = [
     "pytest",
     "ruff",
 ]
+figures = [
+    "ipykernel",
+    "nbconvert",
+    "papermill",
+]
 
 [tool.setuptools]
 packages = ["fast_excursion_limit"]

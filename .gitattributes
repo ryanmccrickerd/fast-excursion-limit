@@ -1,0 +1,29 @@
+# Normalise line endings to LF in the repository, checking out whatever is
+# native to the contributor's platform.
+* text=auto
+
+# Show the enclosing function or class in diff headers.
+*.py diff=python
+
+# Never treat these as text, so they are neither normalised nor diffed.
+*.otf binary
+*.pdf binary
+*.png binary
+
+# Notebooks are illustrative, and their embedded output inflates their byte
+# count, so keep them out of GitHub's language statistics. Output is kept in
+# some of them deliberately, so suppress diffs rather than see base64 images.
+*.ipynb linguist-detectable=false
+*.ipynb -diff
+
+# Latin Modern is bundled third-party, and the plots are produced by the
+# figures workflow, so exclude both from statistics and collapse them in diffs.
+fonts/** linguist-vendored
+plots/** linguist-generated
+
+# Omit from `git archive`, and so from GitHub's downloadable zip and release
+# tarballs, which are of use only to someone working in the repository itself.
+/.github export-ignore
+/.vscode export-ignore
+/.gitattributes export-ignore
+/.gitignore export-ignore

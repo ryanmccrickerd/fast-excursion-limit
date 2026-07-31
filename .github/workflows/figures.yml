@@ -17,7 +17,7 @@ jobs:
         with:
           python-version: "3.14"
           cache: pip
-      - run: pip install -e "." ipykernel nbconvert papermill
+      - run: pip install -e ".[figures]"
       - name: Generate all article figures
         run: papermill notebooks/figures.ipynb /tmp/figures-executed.ipynb --cwd notebooks --log-output --no-progress-bar -p num_paths ${{ inputs.num_paths }}
       - name: Set artifact name
